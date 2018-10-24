@@ -1,0 +1,41 @@
+//Priority Encoder
+//input is 8-bit long array
+//output is 3-bit long array
+
+CHIP PriorityEncoder83 {
+	IN a[8];
+	OUT out[3], idle;
+
+	PARTS:
+	Or(a=a[0], b=a[1], out=i1);
+	Or(a=i1, b=a[2], out=i2);
+	Or(a=i2, b=a[3], out=i3);
+	Or(a=i3, b=a[4], out=i4);
+	Or(a=i4, b=a[5], out=i5);
+	Or(a=i5, b=a[6], out=i6);
+	Or(a=i6, b=a[7], out=negidle);
+	Not(in=negidle, out=idle);
+	
+	Not(in=a[2], out=notD2);
+	Not(in=a[4], out=notD4);
+	Not(in=a[6], out=notD6);
+	And(a=notD4, b=notD2, out=D2D4);
+	And(a=D2D4, b=a[1], out=D1D2D4);
+	And(a=notD4, b=a[3], out=D4D3);
+	Or(a=D1D2D4, b=D4D3, out=D1toD4);
+	Or(a=D1toD4, b=a[5], out=inner);
+	And(a=notD6, b=inner, out=left1);
+	Or(a=left1, b=a[7], out=out[0]);
+	
+	Not(in=a[5], out=notD5);
+	Or(a=a[2], b=a[3], out=D2D3);
+	And(a=notD5, b=notD4, out=D4D5);
+	And(a=D2D3, b=D4D5, out=D2toD5);
+	Or(a=D2toD5, b=a[6], out=D2toD6);
+	Or(a=D2toD6, b=a[7], out=out[1]);
+	
+	Or(a=a[4], b=a[5], out=D4orD5);
+	Or(a=D4orD5, b=a[6], out=left2);
+	Or(a=left2, b=a[7], out=out[2]);
+	
+}
